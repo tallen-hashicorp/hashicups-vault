@@ -3,7 +3,7 @@ services:
   frontend:
     image: 'hashicorpdemoapp/frontend:v1.0.9'
     environment:
-      - NEXT_PUBLIC_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_PUBLIC_API_URL=
 
   nginx:
     image: nginx:alpine
@@ -31,7 +31,7 @@ services:
     image: 'hashicorpdemoapp/product-api:v0.0.22'
     volumes:
       - type: bind
-        source: ./conf.json
+        source: ./conf-from-vault.json
         target: /conf.json
     links:
       - 'product-db:product-db'
