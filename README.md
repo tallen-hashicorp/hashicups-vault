@@ -44,8 +44,6 @@ docker compose up -d vault-agent
 ```
 
 ## Deploying HashiCups
-Navigate to this folder using your CLI and run the following.
-
 ```
 docker compose up -d
 ```
