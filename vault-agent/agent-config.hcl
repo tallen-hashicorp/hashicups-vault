@@ -9,7 +9,7 @@ auto_auth {
    method {
       type = "token_file"
       config = {
-         token_file_path = "/Users/tyler.allen/.vault-token"
+         token_file_path = "/.vault-token"
       }
    }
 }
