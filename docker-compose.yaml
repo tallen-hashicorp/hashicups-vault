@@ -31,7 +31,7 @@ services:
     image: 'hashicorpdemoapp/product-api:v0.0.22'
     volumes:
       - type: bind
-        source: ./conf-from-vault.json
+        source: ./product-api-config/conf-from-vault.json
         target: /conf.json
     links:
       - 'product-db:product-db'
@@ -49,3 +49,25 @@ services:
 
   payments:
     image: 'hashicorpdemoapp/payments:latest'
+
+  vault-agent:
+    image: 'vault:1.13.3'
+    entrypoint: ["vault", "agent", "-config=/agent-config.hcl", "-config=/agent-template.hcl"]
+    volumes:
+      - type: bind
+        source: ./vault-agent/agent-config.hcl
+        target: /agent-config.hcl
+      - type: bind
+        source: ./vault-agent/config.json.tmpl
+        target: /config.json.tmpl
+      - type: bind
+        source: ./vault-agent/agent-template.hcl
+        target: /agent-template.hcl
+      - type: bind
+        source: ./product-api-config
+        target: /product-api-config
+      - type: bind
+        source: ~/.vault-token
+        target: /.vault-token
+    environment:
+      - VAULT_ADDR=http://host.docker.internal:8200

@@ -38,11 +38,9 @@ psql -h 127.0.0.1 -p 5432 -d products -U v-root-my-role-7z2wfZPqTfVldzlkA0Cs-169
 
 ## Setup Vault Agent
 The hashicups application doesnt curranlty have a vault intergation so we will use the vault agent. This will configure the config file in this directory. 
-**You will need to update the vault-agent/agent-template.hcl file to point to your directory**, I have not found a better way to do this yet.
+**You will need to update the VAULT_ADDR in the docker-compose file to point at vault**, you can leave this as `- VAULT_ADDR=http://host.docker.internal:8200` if you are running Vault on the local machine
 ```
-cd cd vault-agent/
-vault agent -config=agent-config.hcl \                                                                                                                                  ✔  08:49:03 pm  
-   -config=agent-template.hcl
+docker compose up -d vault-agent 
 ```
 
 ## Deploying HashiCups

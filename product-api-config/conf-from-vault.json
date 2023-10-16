@@ -1,0 +1,7 @@
+{
+   
+    "db_connection": "host=product-db port=5432 user='v-root-my-role-kV2qb8DOqUBiCDMOMR05-1697487944' password='uXk-qtD6mNfBw-8pJPsc' dbname=products sslmode=disable",
+    "bind_address": ":9090",
+    "metrics_address": ":9103"
+   
+}
