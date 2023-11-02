@@ -99,7 +99,7 @@ vault read database/creds/hashicups-role
 ```
 
 ## Create a secret with a vault token
-For this we are going to use a root token, replace TOKEN with your token. **In Production we should look at using something like app role**
+For this we are going to use a root token, replace **[TOKEN]** with your token. **In Production we should look at using something like app role**
 ```bash
 kubectl create secret generic vault-token --from-literal=vault-token=[TOKEN]
 ```
