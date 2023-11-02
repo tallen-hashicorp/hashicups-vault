@@ -2,6 +2,8 @@
 
 This README provides a guide for setting up a HashiCups + Vault demo using the [hashicups-demosetup](https://github.com/hashicorp/hashicups-setups). You can find the wider HashiCups repository [here](https://github.com/hashicorp-demoapp).
 
+Please note that the commands provided below are intended to be executed in the root directory of the Git repository you have checked out.
+
 ## Start the PostgreSQL DB
 To configure Vault, you'll need to start the PostgreSQL database:
 
@@ -67,6 +69,8 @@ docker compose down
 
 # K8s
 You can also run this in Kubernetes. Please note that it will deploy into the default namespace. If you're using a different namespace, add `-n NAMESPACE` to each `kubectl` command.
+
+Please note that the commands provided below are intended to be executed in the root directory of the Git repository you have checked out.
 
 ## Start the PostgreSQL DB
 To configure Vault, start the PostgreSQL database:
