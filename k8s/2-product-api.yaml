@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-api
+  labels:
+    app: product-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-api
+  template:
+    metadata:
+      labels:
+        app: product-api
+    spec:
+      containers:
+      - name: vault-agent
+        image: vault:1.13.3
+        command:
+        - "vault"
+        args:
+        - "agent"
+        - "-config=/agent-config.hcl"
+        - "-config=/agent-template.hcl"
+        env:
+        - name: VAULT_ADDR
+          valueFrom:
+            secretKeyRef:
+              name: vault-addr
+              key: vault-addr
+        volumeMounts:
+          - name: vault-config
+            mountPath: /agent-config.hcl
+            subPath: agent-config.hcl
+          - name: agent-template-config
+            mountPath: /agent-template.hcl
+            subPath: agent-template.hcl
+          - name: hashicups-config-template
+            mountPath: /config.json.tmpl
+            subPath: config.json.tmpl
+          - name: vault-token
+            readOnly: true
+            mountPath: "/vault-token"
+          - name: local-storage
+            mountPath: /config
+      - name: product-api
+        image: hashicorpdemoapp/product-api:v0.0.22
+        ports:
+          - containerPort: 9090
+        env:
+          - name: CONFIG_FILE
+            value: /config/config.json
+        volumeMounts:
+          - name: local-storage
+            mountPath: /config
+      volumes:
+      - name: vault-config
+        configMap:
+          name: vault-config
+      - name: agent-template-config
+        configMap:
+          name: agent-template-config
+      - name: hashicups-config-template
+        configMap:
+          name: hashicups-config-template
+      - name: vault-token
+        secret:
+          secretName: vault-token
+      - name: local-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-api-service
+spec:
+  selector:
+    app: product-api
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+    nodePort: 30001
