@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+data:
+  agent-config.hcl: |
+    pid_file = "./pidfile"
+
+    vault {
+       address = "YOUR_VAULT_ADDR"
+       tls_skip_verify = true
+    }
+
+    auto_auth {
+       method {
+          type = "token_file"
+          config = {
+             token_file_path = "/vault-token/vault-token"
+          }
+       }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agent-template-config
+data:
+  agent-template.hcl: |
+    template {
+      source      = "/config.json.tmpl"
+      destination = "/config/config.json"
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hashicups-config-template
+data:
+  config.json.tmpl: |
+    {
+      {{ with secret "database/creds/hashicups-role" }}
+        "db_connection": "host=product-api-db-service port=5432 user='{{ .Data.username }}' password='{{ .Data.password }}' dbname=products sslmode=disable",
+        "bind_address": ":9090",
+        "metrics_address": ":9103"
+      {{ end }}
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  default.conf: |
+    proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=STATIC:10m inactive=7d use_temp_path=off;
+
+    upstream frontend_upstream {
+      server frontend-service:3000;
+    }
+
+    server {
+      listen 80;
+      server_name  localhost;
+
+      server_tokens off;
+
+      gzip on;
+      gzip_proxied any;
+      gzip_comp_level 4;
+      gzip_types text/css application/javascript image/svg+xml;
+
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+
+      location /_next/static {
+        proxy_cache STATIC;
+        proxy_pass http://frontend_upstream;
+
+        # For testing cache - remove before deploying to production
+        add_header X-Cache-Status $upstream_cache_status;
+      }
+
+      location /static {
+        proxy_cache STATIC;
+        proxy_ignore_headers Cache-Control;
+        proxy_cache_valid 60m;
+        proxy_pass http://frontend_upstream;
+
+        # For testing cache - remove before deploying to production
+        add_header X-Cache-Status $upstream_cache_status;
+      }
+
+      location / {
+        proxy_pass http://frontend_upstream;
+      }
+
+      location /api {
+        proxy_pass http://public-api-service:8080;
+      }
+    }
