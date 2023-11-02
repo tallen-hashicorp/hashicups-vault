@@ -118,3 +118,11 @@ The hashicups application doesnt curranlty have a vault intergation so we will u
 ```
 kubectl apply -f k8s
 ```
+
+## Access
+You will need to access this via a port forward. This is becuase the `NEXT_PUBLIC_PUBLIC_API_URL` in `k8s/4-frontend.yaml` is configured to use an API which will be found at "http://127.0.0.1:8080" via the nginx service
+```bash
+kubectl port-forward svc/nginx-service 8080:80
+```
+
+to access [http://127.0.0.1:8080]("http://127.0.0.1:8080")
