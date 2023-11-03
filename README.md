@@ -72,6 +72,8 @@ You can also run this in Kubernetes. Please note that it will deploy into the de
 
 Please note that the commands provided below are intended to be executed in the root directory of the Git repository you have checked out.
 
+![K8s Diagram](./docs/diagram.png)
+
 ## Start the PostgreSQL DB
 To configure Vault, start the PostgreSQL database:
 
@@ -81,7 +83,7 @@ kubectl apply -f k8s/1-product-db.yaml
 ```
 
 ## Setup Vault
-Ensure you update `localhost:30000` to point at the node running the service:
+Ensure you update `localhost:30000` to point at the k8s cluster running the DB service which is on `nodeport:30000`:
 
 ```bash
 export VAULT_ADDR='http://127.0.0.1:8200'
